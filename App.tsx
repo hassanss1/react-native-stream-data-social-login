@@ -13,30 +13,29 @@ import theme from './src/styles/theme';
 import { LogBox } from 'react-native';
 
 LogBox.ignoreLogs([
-  "EventEmitter.removeListener('url', ...): Method has been deprecated. Please instead use `remove()` on the subscription returned by `EventEmitter.addListener`."
-])
+  "EventEmitter.removeListener('url', ...): Method has been deprecated. Please instead use `remove()` on the subscription returned by `EventEmitter.addListener`.",
+]);
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
+  async function prepare() {
+    try {
+      await SplashScreen.preventAutoHideAsync();
+      await Font.loadAsync({
+        DMSans_400Regular,
+        DMSans_700Bold,
+      });
+    } catch (e) {
+      console.warn(e);
+    } finally {
+      setAppIsReady(true);
+    }
+  }
 
   useEffect(() => {
-    async function prepare() {
-      try {
-        await SplashScreen.preventAutoHideAsync();
-        await Font.loadAsync({
-          DMSans_400Regular,
-          DMSans_700Bold
-        });
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setAppIsReady(true);
-      }
-    }
-
     prepare();
-  }, [])
-  
+  }, []);
+
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
       await SplashScreen.hideAsync();
@@ -48,13 +47,10 @@ export default function App() {
   }
 
   return (
-    <GestureHandlerRootView
-      onLayout={onLayoutRootView}
-      style={{ flex: 1 }}
-    >
+    <GestureHandlerRootView onLayout={onLayoutRootView} style={{ flex: 1 }}>
       <AuthProvider>
         <ThemeProvider theme={theme}>
-          <StatusBar style="light" backgroundColor="transparent" translucent />
+          <StatusBar style='light' backgroundColor='transparent' translucent />
           <Routes />
         </ThemeProvider>
       </AuthProvider>
